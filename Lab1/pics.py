@@ -1,45 +1,41 @@
 from bs4 import BeautifulSoup
 import requests
 import os
-import json
 
 def createDir(img_class):
     if not os.path.isdir("dataset"):
        os.mkdir("dataset")
     os.mkdir(f"dataset/{img_class}")
 
-def yandexSearch(img_class):
+def imgDownload(img_class):
     createDir(img_class)
 
-    url = f"https://yandex.ru/images/search?text={img_class}&p="
-    headers = {
-        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.36",
-        "Accept-Language": "en-US,en;q=0.5"
-    }
-    
-    pageNumb = 1
-    countImg = 0
+    url = f"https://www.bing.com/images/search?q={img_class}"
+    headers = headers = {
+    "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.36",
+    "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8",
+    "Accept-Language": "en-US,en;q=0.5",
+    "Connection": "keep-alive",
+    "Upgrade-Insecure-Requests": "1",
+    "Referer": "https://www.google.com/",
+    "Accept-Encoding": "gzip, deflate, br",
+}
+    response = requests.get(url, headers).text
+    soup = BeautifulSoup(response, 'lxml')
+    img_tags = soup.find_all('img', {"src": True}, class_='mimg')
+    image_urls = [img['src'] for img in img_tags]
+    k = 0
 
-    while countImg < 1000:
-        current_url = f"{url}{pageNumb}"
-        response = requests.get(current_url, headers=headers)
+    for img_url in image_urls:
+        if k >= 15:
+            break
 
-        if response.status_code == 200:
-            soup = BeautifulSoup(response.text, 'lxml')
-            image_tags = soup.find_all('img')
+        response = requests.get(img_url)
+        filename = f"dataset/{img_class}/{k + 1}.jpg"
+            
+        with open(filename, 'wb') as f:
+            f.write(response.content)
+            k += 1
 
-            for img in image_tags:
-                img_url = img.get('src')
-                if img_url:
-                    img_response = requests.get(img_url)
-
-                    if img_response.status_code == 200:
-                        filename = os.path.join('dataset', img_class, f'{countImg}.jpg')
-                        with open(filename, 'wb') as img_file:
-                            img_file.write(img_response.content)
-                        countImg += 1
-        
-    pageNumb += 1
-        
-yandexSearch("cats")
-yandexSearch("dogs")
+imgDownload("cats")
+imgDownload("dogs")
