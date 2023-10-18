@@ -2,13 +2,13 @@ from bs4 import BeautifulSoup
 import requests
 import os
 
-def createDir(img_class):
+def create_dir(img_class):
     if not os.path.isdir("dataset"):
        os.mkdir("dataset")
     os.mkdir(f"dataset/{img_class}")
 
-def imgDownload(img_class):
-    createDir(img_class)
+def img_download(img_class):
+    create_dir(img_class)
 
     url = f"https://www.bing.com/images/search?q={img_class}"
     headers = headers = {
@@ -27,15 +27,15 @@ def imgDownload(img_class):
     k = 0
 
     for img_url in image_urls:
-        if k >= 15:
+        if k >= 1000:
             break
 
         response = requests.get(img_url)
-        filename = f"dataset/{img_class}/{k + 1}.jpg"
+        filename = f"dataset/{img_class}/{k:04}.jpg"
             
         with open(filename, 'wb') as f:
             f.write(response.content)
             k += 1
 
-imgDownload("cats")
-imgDownload("dogs")
+img_download("cats")
+img_download("dogs")
