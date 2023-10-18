@@ -12,7 +12,7 @@ def img_download(img_class):
 
     page = 1
     k = 0
-    while k < 300:
+    while k < 1001:
         url = f"https://www.bing.com/images/search?q={img_class}&first={page}"
         headers = headers = {
         "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.36",
