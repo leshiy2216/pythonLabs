@@ -9,16 +9,17 @@ logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 
-def create_dir(folder_path):
+def create_dir(folder_path, subfolder_path):
     try:
-        if not os.path.exists(folder_path):
-            os.makedirs(folder_path)
+        subfolder_path = os.path.join(folder_path, subfolder_path)
+        if not os.path.exists(subfolder_path):
+            os.makedirs(subfolder_path)
     except Exception as e:
         logger.exception("Can't create a folder")
 
 
-def img_download(img_class, folder_path, num_images):
-    create_dir(img_class)
+def img_download(subfolder_path, folder_path, num_images):
+    create_dir(folder_path, subfolder_path)
 
     page = 1
     k = 0
@@ -30,9 +31,10 @@ def img_download(img_class, folder_path, num_images):
         "Upgrade-Insecure-Requests": "1",
         "Referer": "https://www.google.com/",
         "Accept-Encoding": "gzip, deflate, br",
-        }
+    }
+
     while k < num_images:
-        url = f"https://www.bing.com/images/search?q={img_class}&first={page}"
+        url = f"https://www.bing.com/images/search?q={subfolder_path}&first={page}"
         try:
             response = requests.get(url, headers)
             soup = BeautifulSoup(response.text, 'lxml')
@@ -42,24 +44,23 @@ def img_download(img_class, folder_path, num_images):
             for img_url in image_urls:
                 try:
                     response = requests.get(img_url)
-                    filename = os.path.join(folder_path, img_class, f"{img_num:04}.jpg")
+                    filename = os.path.join(folder_path, subfolder_path, f"{k:04}.jpg")
 
                     with open(filename, 'wb') as f:
                         f.write(response.content)
-                    img_num += 1
+                    k += 1
                 except Exception as e:
-                    logger.exception("Error downloading image")
+                    logger.exception("Ошибка при загрузке изображения")
                 page += 1
         except Exception as e:
-            logger.exception("Error fetching data")
+            logger.exception("Ошибка при получении данных")
 
 
-if __name__=="__main__":
-    parser = argparse.ArgumentParser(description='Download images from Bing Images')
-    parser.add_argument('img_class', type=str, help='Name of the image class (e.g., "cats")')
-    parser.add_argument('folder_path', type=str, help='Output directory for saving images')
-    parser.add_argument('num_images', type=int, help='Number of images to download')
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser(description = 'Download images from Bing Images')
+    parser.add_argument('subfolder_path', type = str, help = 'Name of the image class')
+    parser.add_argument('folder_path', type = str, help = 'Output directory for saving images')
+    parser.add_argument('num_images', type = int, help = 'Number of images to download')
 
-    
     args = parser.parse_args()
-    img_download(args.img_class, args.folder_path, args.num_images)
+    img_download(args.subfolder_path, args.folder_path, args.num_images)
