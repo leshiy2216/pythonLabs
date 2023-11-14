@@ -50,10 +50,10 @@ def img_download(subfolder_path, folder_path, num_images):
                         f.write(response.content)
                     k += 1
                 except Exception as e:
-                    logger.exception("Ошибка при загрузке изображения")
+                    logger.exception("Error downloading image")
                 page += 1
         except Exception as e:
-            logger.exception("Ошибка при получении данных")
+            logger.exception("Error fetching data")
 
 
 if __name__ == "__main__":
