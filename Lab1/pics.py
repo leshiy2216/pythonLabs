@@ -16,7 +16,7 @@ logging.basicConfig(level=logging.INFO,
 logger = logging.getLogger(__name__)
 
 
-def create_dir(folder_path: str, subfolder_path: str):
+def create_dir(folder_path: str, subfolder_path: str) -> None:
     """
     the function creates a main and an additional folder
     Parameters
@@ -32,7 +32,7 @@ def create_dir(folder_path: str, subfolder_path: str):
         logging.exception(f"Can't create a folder: {e}")
 
 
-def img_download(subfolder_path: str, folder_path: str, num_images: int):
+def img_download(subfolder_path: str, folder_path: str, num_images: int) -> None:
     """
     the function calls the function to create folders and loads images into them using: 
     "https://www.bing.com/images/"
