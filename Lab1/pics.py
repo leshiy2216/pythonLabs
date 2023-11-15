@@ -1,8 +1,12 @@
-from bs4 import BeautifulSoup
-import requests
-import os
 import logging
+import os
 import argparse
+import requests
+from bs4 import BeautifulSoup
+from fake_headers import Headers
+
+
+BASE_URL = "https://www.bing.com/images/search?q="
 
 
 logging.basicConfig(level=logging.INFO)
@@ -10,6 +14,13 @@ logger = logging.getLogger(__name__)
 
 
 def create_dir(folder_path, subfolder_path):
+    """
+    the function creates a main and an additional folder
+    Parameters
+    ----------
+    folder_path : str
+    subfolder_path : str
+    """
     try:
         subfolder_path = os.path.join(folder_path, subfolder_path)
         if not os.path.exists(subfolder_path):
@@ -19,22 +30,22 @@ def create_dir(folder_path, subfolder_path):
 
 
 def img_download(subfolder_path, folder_path, num_images):
+    """
+    the function calls the function to create folders and loads images into them using: 
+    "https://www.bing.com/images/"
+    Parameters
+    ----------
+    subfolder_path : str
+    folder_path : str
+    num_images : int
+    """
     create_dir(folder_path, subfolder_path)
-
     page = 1
     k = 0
-    headers = {
-        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.36",
-        "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8",
-        "Accept-Language": "en-US,en;q=0.5",
-        "Connection": "keep-alive",
-        "Upgrade-Insecure-Requests": "1",
-        "Referer": "https://www.google.com/",
-        "Accept-Encoding": "gzip, deflate, br",
-    }
+    headers = Headers(os="mac", headers=True).generate()
 
     while k < num_images:
-        url = f"https://www.bing.com/images/search?q={subfolder_path}&first={page}"
+        url = f"{BASE_URL}{subfolder_path}&first={page}"
         try:
             response = requests.get(url, headers)
             soup = BeautifulSoup(response.text, 'lxml')
@@ -50,17 +61,19 @@ def img_download(subfolder_path, folder_path, num_images):
                         f.write(response.content)
                     k += 1
                 except Exception as e:
-                    logger.exception("Error downloading image")
+                    logging.exception("Error downloading image")
                 page += 1
         except Exception as e:
-            logger.exception("Error fetching data")
+            logging.exception("Error fetching data")
 
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description = 'Download images from Bing Images')
-    parser.add_argument('subfolder_path', type = str, help = 'Name of the image class')
-    parser.add_argument('folder_path', type = str, help = 'Output directory for saving images')
-    parser.add_argument('num_images', type = int, help = 'Number of images to download')
+    parser.add_argument('subfolder_path1', type = str, default = 'cats', help = 'Name of the image 1st class')
+    parser.add_argument('subfolder_path2', type = str, default = 'dogs', help = 'Name of the image 2nd class')
+    parser.add_argument('folder_path', type = str, default = 'dataset', help = 'Output directory for saving images')
+    parser.add_argument('num_images', type = int, default = 1000, help = 'Number of images to download')
 
     args = parser.parse_args()
-    img_download(args.subfolder_path, args.folder_path, args.num_images)
+    img_download(args.subfolder_path1, args.folder_path, args.num_images)
+    img_download(args.subfolder_path2, args.folder_path, args.num_images)
