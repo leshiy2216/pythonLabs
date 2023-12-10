@@ -2,6 +2,7 @@ import os
 import shutil
 import argparse
 
+
 def copy_and_rename_dataset(src_folder: str, dest_folder: str) -> None:
     """
     copy and rename dataset
@@ -29,6 +30,7 @@ def copy_and_rename_dataset(src_folder: str, dest_folder: str) -> None:
         print("dataset copied and renamed")
     except Exception as e:
         print(f"error copying and renaming dataset: {e}")
+
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='Copy and rename dataset')
