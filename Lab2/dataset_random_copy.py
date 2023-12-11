@@ -1,4 +1,5 @@
 import argparse
+import logging
 import os
 import random
 import shutil
@@ -34,9 +35,9 @@ def copy_dataset(src_folder: str, dest_folder: str, randomize: bool = False) -> 
 
                     shutil.copy(src_filepath, dest_filepath)
 
-        print(f"dataset copied and {'randomized' if randomize else 'renamed'}")
+        logging.info(f"Dataset copied and {'randomized' if randomize else 'renamed'}")
     except Exception as e:
-        print(f"error copying and {'randomizing' if randomize else 'renaming'} dataset: {e}")
+        logging.error(f"error copying and {'randomizing' if randomize else 'renaming'} dataset: {e}")
 
 
 if __name__ == "__main__":
