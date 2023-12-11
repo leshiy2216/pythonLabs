@@ -1,7 +1,7 @@
-import os
-import csv
 import argparse
+import csv
 import logging
+import os
 
 
 def create_annotation_file(folder_path: str, subfolder_paths: list, annotation_file_path: str):

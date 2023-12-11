@@ -1,6 +1,6 @@
+import argparse
 import os
 import shutil
-import argparse
 
 
 def copy_and_rename_dataset(src_folder: str, dest_folder: str) -> None:

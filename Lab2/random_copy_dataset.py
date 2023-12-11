@@ -1,7 +1,8 @@
-import os
-import shutil
-import random
 import argparse
+import os
+import random
+import shutil
+
 
 def copy_and_randomize_dataset(src_folder: str, dest_folder: str) -> None:
     """
@@ -29,6 +30,7 @@ def copy_and_randomize_dataset(src_folder: str, dest_folder: str) -> None:
         print("dataset copied and randomized")
     except Exception as e:
         print(f"error copying and randomizing dataset: {e}")
+
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='Copy and randomize dataset')
