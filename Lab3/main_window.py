@@ -1,6 +1,7 @@
 from PyQt5 import QtWidgets
 from PyQt5.QtWidgets import QVBoxLayout, QPushButton, QLabel, QLineEdit, QFileDialog
-from iterator import ClassIterator, DatasetIterator
+from PyQt5.QtWidgets import QHBoxLayout
+from iterator import ClassIterator
 from annotation import create_annotation_file
 from dataset_random_copy import copy_dataset
 import os
@@ -52,6 +53,37 @@ class MainWindow(QtWidgets.QWidget):
 
         self.setLayout(layout)
         self.setWindowTitle("Dataset Processing App")
+
+        btn_layout = QHBoxLayout()
+
+        self.btn_next_cat = QPushButton("Next cat")
+        self.btn_next_cat.clicked.connect(self.show_next_cat)
+        btn_layout.addWidget(self.btn_next_cat)
+
+        self.btn_next_dog = QPushButton("Next dog")
+        self.btn_next_dog.clicked.connect(self.show_next_dog)
+        btn_layout.addWidget(self.btn_next_dog)
+
+        layout.addLayout(btn_layout)
+
+        self.setLayout(layout)
+        self.setWindowTitle("App for processing dataset")
+
+    def show_next_cat(self):
+        self.show_next_instance("cat")
+
+    def show_next_dog(self):
+        self.show_next_instance("dog")
+
+    def show_next_instance(self, target_class):
+        if self.class_iterator is not None:
+            next_instance = next(self.class_iterator)
+            if next_instance is not None:
+                print(f"Displaying the following {target_class}: {next_instance}")
+            else:
+                print(f"There are no more instances {target_class}.")
+        else:
+            print("The dataset is not loaded. Please copy the dataset first.")
 
     def browse_folder(self):
         self.folder_path = QFileDialog.getExistingDirectory(self, 'Select Source Dataset Folder')
