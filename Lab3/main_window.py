@@ -7,7 +7,11 @@ from annotation import create_annotation_file
 from dataset_random_copy import copy_dataset
 import os
 import sys
+import logging
 
+
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 
 class MainWindow(QtWidgets.QWidget):
     def __init__(self):
@@ -83,12 +87,12 @@ class MainWindow(QtWidgets.QWidget):
             try:
                 next_instance = next(self.class_iterator)
                 self.display_image(next_instance)
-                print(f"Displaying the following {target_class}: {next_instance}")
+                logger.info(f"Displaying the following {target_class}: {next_instance}")
             except StopIteration:
-                print(f"There are no more instances {target_class}.")
+                logger.warning(f"There are no more instances {target_class}.")
                 self.class_iterator = None
         else:
-            print("The dataset is not loaded. Please copy the dataset first.")
+            logger.error("The dataset is not loaded. Please copy the dataset first.")
 
     def display_image(self, image_path):
         if image_path:
