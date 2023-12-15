@@ -1,10 +1,12 @@
-from PyQt5 import QtWidgets
+from PyQt5 import QtWidgets, QtGui
 from PyQt5.QtWidgets import QVBoxLayout, QPushButton, QLabel, QLineEdit, QFileDialog
 from PyQt5.QtWidgets import QHBoxLayout
+from PyQt5.QtGui import QPixmap
 from iterator import ClassIterator
 from annotation import create_annotation_file
 from dataset_random_copy import copy_dataset
 import os
+import sys
 
 
 class MainWindow(QtWidgets.QWidget):
@@ -51,8 +53,8 @@ class MainWindow(QtWidgets.QWidget):
         self.btn_copy_dataset.clicked.connect(self.copy_dataset)
         layout.addWidget(self.btn_copy_dataset)
 
-        self.setLayout(layout)
-        self.setWindowTitle("Dataset Processing App")
+        self.image_label = QLabel("Image will be displayed here.")
+        layout.addWidget(self.image_label)
 
         btn_layout = QHBoxLayout()
 
@@ -67,7 +69,8 @@ class MainWindow(QtWidgets.QWidget):
         layout.addLayout(btn_layout)
 
         self.setLayout(layout)
-        self.setWindowTitle("App for processing dataset")
+        self.setWindowTitle("Work with dataset")
+        self.setMinimumSize(400, 400)
 
     def show_next_cat(self):
         self.show_next_instance("cat")
@@ -79,6 +82,7 @@ class MainWindow(QtWidgets.QWidget):
         if self.class_iterator is not None:
             try:
                 next_instance = next(self.class_iterator)
+                self.display_image(next_instance)
                 print(f"Displaying the following {target_class}: {next_instance}")
             except StopIteration:
                 print(f"There are no more instances {target_class}.")
@@ -86,6 +90,12 @@ class MainWindow(QtWidgets.QWidget):
         else:
             print("The dataset is not loaded. Please copy the dataset first.")
 
+    def display_image(self, image_path):
+        if image_path:
+            pixmap = QPixmap(image_path)
+            self.image_label.setPixmap(pixmap)
+        else:
+            self.image_label.clear()
 
     def browse_folder(self):
         self.folder_path = QFileDialog.getExistingDirectory(self, 'Select Source Dataset Folder')
@@ -109,8 +119,6 @@ class MainWindow(QtWidgets.QWidget):
 
 
 if __name__ == "__main__":
-    import sys
-
     app = QtWidgets.QApplication(sys.argv)
     window = MainWindow()
     window.show()
