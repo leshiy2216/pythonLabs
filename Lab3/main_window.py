@@ -77,13 +77,15 @@ class MainWindow(QtWidgets.QWidget):
 
     def show_next_instance(self, target_class):
         if self.class_iterator is not None:
-            next_instance = next(self.class_iterator)
-            if next_instance is not None:
+            try:
+                next_instance = next(self.class_iterator)
                 print(f"Displaying the following {target_class}: {next_instance}")
-            else:
+            except StopIteration:
                 print(f"There are no more instances {target_class}.")
+                self.class_iterator = None
         else:
             print("The dataset is not loaded. Please copy the dataset first.")
+
 
     def browse_folder(self):
         self.folder_path = QFileDialog.getExistingDirectory(self, 'Select Source Dataset Folder')
