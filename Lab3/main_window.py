@@ -1,17 +1,17 @@
-from PyQt5 import QtWidgets, QtGui
-from PyQt5.QtWidgets import QVBoxLayout, QPushButton, QLabel, QLineEdit, QFileDialog
-from PyQt5.QtWidgets import QHBoxLayout
-from PyQt5.QtGui import QPixmap
-from iterator import ClassIterator
-from annotation import create_annotation_file
-from dataset_random_copy import copy_dataset
 import os
 import sys
 import logging
+from PyQt5 import QtWidgets, QtGui
+from PyQt5.QtWidgets import QVBoxLayout, QHBoxLayout, QPushButton, QLabel, QLineEdit, QFileDialog
+from PyQt5.QtGui import QPixmap
+from Lab2.annotation import create_annotation_file
+from Lab2.dataset_random_copy import copy_dataset
+from Lab2.iterator import ClassIterator
 
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
+
 
 class MainWindow(QtWidgets.QWidget):
     def __init__(self):
@@ -123,6 +123,7 @@ class MainWindow(QtWidgets.QWidget):
 
 
 if __name__ == "__main__":
+    print(sys.path)
     app = QtWidgets.QApplication(sys.argv)
     window = MainWindow()
     window.show()
