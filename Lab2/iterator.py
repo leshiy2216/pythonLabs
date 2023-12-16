@@ -1,10 +1,11 @@
 import csv
-
+import os
 
 class ImageIterator:
-    def __init__(self, annotation_file, target_class):
+    def __init__(self, annotation_file, target_class, dest_folder_path=None):
         self.annotation_file = annotation_file
         self.target_class = target_class
+        self.dest_folder_path = dest_folder_path
         self.class_instances = self.load_annotation_file()
         self.index = 0
         self.prev_instances = set()
@@ -33,12 +34,14 @@ class ImageIterator:
 
 
 class ClassIterator:
-    def __init__(self, csv_file: str, class_labels):
+    def __init__(self, csv_file: str, class_labels, dest_folder_path):
         self.csv_file = csv_file
         self.class_labels = class_labels
-        self.image_iterators = {label: ImageIterator(csv_file, label) for label in class_labels}
+        self.dest_folder_path = dest_folder_path
+        self.image_iterators = {label: ImageIterator(csv_file, label, dest_folder_path) for label in class_labels}
         self.current_label_index = 0
         self.current_image_iterator = None
+
 
     def __iter__(self):
         return self
