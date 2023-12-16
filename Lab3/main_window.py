@@ -4,9 +4,9 @@ import logging
 from PyQt5 import QtWidgets, QtGui
 from PyQt5.QtWidgets import QVBoxLayout, QHBoxLayout, QPushButton, QLabel, QLineEdit, QFileDialog
 from PyQt5.QtGui import QPixmap
-from Lab2.annotation import create_annotation_file
-from Lab2.dataset_random_copy import copy_dataset
-from Lab2.iterator import ClassIterator
+from annotation import create_annotation_file
+from dataset_random_copy import copy_dataset
+from iterator import ClassIterator
 
 
 logging.basicConfig(level=logging.INFO)
@@ -43,6 +43,7 @@ class MainWindow(QtWidgets.QWidget):
         layout.addWidget(self.edit_annotation)
 
         self.btn_create_annotation = QPushButton("Create Annotation File")
+        self.btn_create_annotation.setEnabled(False)
         self.btn_create_annotation.clicked.connect(self.create_annotation)
         layout.addWidget(self.btn_create_annotation)
 
@@ -54,6 +55,7 @@ class MainWindow(QtWidgets.QWidget):
         layout.addWidget(self.btn_browse_dest_folder)
 
         self.btn_copy_dataset = QPushButton("Copy and Rename Dataset")
+        self.btn_copy_dataset.setEnabled(False)
         self.btn_copy_dataset.clicked.connect(self.copy_dataset)
         layout.addWidget(self.btn_copy_dataset)
 
@@ -63,24 +65,21 @@ class MainWindow(QtWidgets.QWidget):
         btn_layout = QHBoxLayout()
 
         self.btn_next_cat = QPushButton("Next cat")
-        self.btn_next_cat.clicked.connect(self.show_next_cat)
+        self.btn_next_cat.clicked.connect(lambda: self.show_next_instance("cat"))
         btn_layout.addWidget(self.btn_next_cat)
 
         self.btn_next_dog = QPushButton("Next dog")
-        self.btn_next_dog.clicked.connect(self.show_next_dog)
+        self.btn_next_dog.clicked.connect(lambda: self.show_next_instance("dog"))
         btn_layout.addWidget(self.btn_next_dog)
+
+        self.btn_next_cat.setEnabled(False)  # Изначально задизейбливаем кнопки
+        self.btn_next_dog.setEnabled(False)
 
         layout.addLayout(btn_layout)
 
         self.setLayout(layout)
         self.setWindowTitle("Work with dataset")
         self.setMinimumSize(400, 400)
-
-    def show_next_cat(self):
-        self.show_next_instance("cat")
-
-    def show_next_dog(self):
-        self.show_next_instance("dog")
 
     def show_next_instance(self, target_class):
         if self.class_iterator is not None:
@@ -105,11 +104,22 @@ class MainWindow(QtWidgets.QWidget):
         self.folder_path = QFileDialog.getExistingDirectory(self, 'Select Source Dataset Folder')
         self.label_folder.setText(f"Selected Source Dataset Folder: {self.folder_path}")
 
+        if self.folder_path:
+            self.btn_create_annotation.setEnabled(True)
+            self.btn_copy_dataset.setEnabled(True)
+        else:
+            self.btn_create_annotation.setEnabled(False)
+            self.btn_copy_dataset.setEnabled(False)
+
     def create_annotation(self):
         self.annotation_file_path, _ = QFileDialog.getSaveFileName(self, 'Save Annotation File', '', 'CSV Files (*.csv)')
         self.edit_annotation.setText(self.annotation_file_path)
 
         create_annotation_file(self.folder_path, os.listdir(self.folder_path), self.annotation_file_path)
+
+        if self.annotation_file_path:
+            self.btn_next_cat.setEnabled(True)
+            self.btn_next_dog.setEnabled(True)
 
     def browse_dest_folder(self):
         self.dest_folder_path = QFileDialog.getExistingDirectory(self, 'Select Destination Folder')
