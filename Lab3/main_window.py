@@ -1,7 +1,7 @@
 import os
 import sys
 import logging
-from PyQt5 import QtWidgets, QtGui
+from PyQt5 import QtWidgets
 from PyQt5.QtWidgets import QVBoxLayout, QHBoxLayout, QPushButton, QLabel, QLineEdit, QFileDialog
 from PyQt5.QtGui import QPixmap
 from Lab2.annotation import create_annotation_file
@@ -184,7 +184,6 @@ class MainWindow(QtWidgets.QWidget):
                 logger.error(f"The annotation files for cat and dog were not found.")
         except Exception as e:
             logger.exception(f"Error in copying dataset: {e}")
-
 
 
 if __name__ == "__main__":
