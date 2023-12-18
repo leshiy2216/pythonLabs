@@ -2,12 +2,11 @@ import argparse
 import pandas as pd
 from PIL import Image
 
+
 def analyze_dataset(cat_annotation_file, dog_annotation_file):
-    # Чтение данных из аннотационных файлов
     cat_df = pd.read_csv(cat_annotation_file)
     dog_df = pd.read_csv(dog_annotation_file)
 
-    # Добавление столбцов 'class' и числовых меток
     cat_df['class'] = 'cat'
     dog_df['class'] = 'dog'
 
@@ -17,7 +16,6 @@ def analyze_dataset(cat_annotation_file, dog_annotation_file):
     df = pd.concat([cat_df, dog_df], ignore_index=True)
     df['label'] = df['class'].astype('category').cat.codes
 
-    # Добавление столбцов с высотой, шириной и глубиной изображения
     df['height'] = df['The absolute path'].apply(lambda x: Image.open(x).height)
     df['width'] = df['The absolute path'].apply(lambda x: Image.open(x).width)
     df['channels'] = df['The absolute path'].apply(lambda x: len(Image.open(x).split()))
@@ -41,11 +39,35 @@ def analyze_dataset(cat_annotation_file, dog_annotation_file):
     else:
         print("\nThe dataset is not balanced.")
 
+    return df
+
+def filter_by_class(df, class_label):
+    filtered_df = df[df['class'] == class_label].reset_index(drop=True)
+    return filtered_df
+
+def filter_by_size_and_class(df, class_label, max_width, max_height):
+    filtered_df = df[(df['class'] == class_label) & (df['width'] <= max_width) & (df['height'] <= max_height)].reset_index(drop=True)
+    return filtered_df
+
+
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description='Analyze dataset with cat and dog annotations')
+    parser = argparse.ArgumentParser(description='Image Dataset Analysis and Filtering')
     parser.add_argument('cat_annotation_file', type=str, help='Path to the cat annotation file')
     parser.add_argument('dog_annotation_file', type=str, help='Path to the dog annotation file')
-
+    parser.add_argument('--filter-class', type=str, help='Filter by class label')
+    parser.add_argument('--filter-width', type=int, help='Max width for filtering')
+    parser.add_argument('--filter-height', type=int, help='Max height for filtering')
     args = parser.parse_args()
 
-    analyze_dataset(args.cat_annotation_file, args.dog_annotation_file)
+    df = analyze_dataset(args.cat_annotation_file, args.dog_annotation_file)
+
+    if args.filter_class:
+        filtered_df = filter_by_class(df, class_label=args.filter_class)
+        print("\nDataFrame filtered by class:")
+        print(filtered_df)
+
+    if args.filter_width and args.filter_height:
+        filtered_size_df = filter_by_size_and_class(df, class_label=args.filter_class,
+                                                     max_width=args.filter_width, max_height=args.filter_height)
+        print("\nDataFrame filtered by size and class:")
+        print(filtered_size_df)
