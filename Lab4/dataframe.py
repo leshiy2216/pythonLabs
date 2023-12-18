@@ -1,10 +1,18 @@
 import argparse
 import pandas as pd
 from PIL import Image
-from filter import plot_histogram
+from histograms import plot_histogram
 
 
-def analyze_dataset(cat_annotation_file, dog_annotation_file):
+def analyze_dataset(cat_annotation_file : str, dog_annotation_file : str) -> None:
+    """
+    func work with dataset(do dataframe and sort dataframe)
+
+    Parameters
+    ----------
+    cat_annotation_file : str
+    dog_annotation_file : str
+    """
     cat_df = pd.read_csv(cat_annotation_file)
     dog_df = pd.read_csv(dog_annotation_file)
 
@@ -45,12 +53,30 @@ def analyze_dataset(cat_annotation_file, dog_annotation_file):
     return df
 
 
-def filter_by_class(df, class_label):
+def filter_by_class(df: pd.DataFrame, class_label: str) -> pd.DataFrame:
+    """
+    filter dataframe by class
+
+    Parameters
+    ----------
+    df : pd.DataFrame
+    class_label : str
+    """
     filtered_df = df[df['class'] == class_label].reset_index(drop=True)
     return filtered_df
 
 
-def filter_by_size_and_class(df, class_label, max_width, max_height):
+def filter_by_size_and_class(df: pd.DataFrame, class_label: str, max_width: int, max_height: int) -> pd.DataFrame:
+    """
+    filter DataFrame by class, width and height.
+
+    Parameters
+    ----------
+    df : pd.DataFrame
+    class_label: str
+    max_width : int
+    max_height : int
+    """
     filtered_df = df[(df['class'] == class_label) & (df['width'] <= max_width) & (df['height'] <= max_height)].reset_index(drop=True)
     return filtered_df
 
