@@ -23,6 +23,8 @@ def analyze_dataset(cat_annotation_file, dog_annotation_file):
     df.rename(columns={'The absolute path': 'absolute_path'}, inplace=True)
     df = df[['class', 'absolute_path', 'label', 'height', 'width', 'channels']]
 
+    df['pixel_count'] = df.apply(lambda row: Image.open(row['absolute_path']).size[0] * Image.open(row['absolute_path']).size[1], axis=1)
+
     print(df)
 
     print("\nStatistical information for image sizes:")
@@ -71,3 +73,7 @@ if __name__ == "__main__":
                                                      max_width=args.filter_width, max_height=args.filter_height)
         print("\nDataFrame filtered by size and class:")
         print(filtered_size_df)
+
+    grouped_df = df.groupby('class')['pixel_count'].agg(['min', 'max', 'mean']).reset_index()
+    print("\nStatistical information for pixel count:")
+    print(grouped_df)
