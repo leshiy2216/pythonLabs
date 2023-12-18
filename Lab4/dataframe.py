@@ -1,6 +1,7 @@
 import argparse
 import pandas as pd
 from PIL import Image
+from filter import plot_histogram
 
 
 def analyze_dataset(cat_annotation_file, dog_annotation_file):
@@ -43,9 +44,11 @@ def analyze_dataset(cat_annotation_file, dog_annotation_file):
 
     return df
 
+
 def filter_by_class(df, class_label):
     filtered_df = df[df['class'] == class_label].reset_index(drop=True)
     return filtered_df
+
 
 def filter_by_size_and_class(df, class_label, max_width, max_height):
     filtered_df = df[(df['class'] == class_label) & (df['width'] <= max_width) & (df['height'] <= max_height)].reset_index(drop=True)
@@ -77,3 +80,8 @@ if __name__ == "__main__":
     grouped_df = df.groupby('class')['pixel_count'].agg(['min', 'max', 'mean']).reset_index()
     print("\nStatistical information for pixel count:")
     print(grouped_df)
+
+    random_image = df[df['class'] == 'cat'].sample(1).iloc[0]
+    image_path = random_image['absolute_path']
+    print("\n")
+    plot_histogram(image_path)
