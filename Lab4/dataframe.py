@@ -1,7 +1,12 @@
 import argparse
+import logging
 import pandas as pd
 from PIL import Image
 from histograms import plot_histogram
+
+
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 
 
 def analyze_dataset(cat_annotation_file : str, dog_annotation_file : str) -> None:
@@ -34,21 +39,19 @@ def analyze_dataset(cat_annotation_file : str, dog_annotation_file : str) -> Non
 
     df['pixel_count'] = df.apply(lambda row: Image.open(row['absolute_path']).size[0] * Image.open(row['absolute_path']).size[1], axis=1)
 
-    print(df)
+    logger.info("\nStatistical information for image sizes:")
+    logger.info(df[['width', 'height', 'channels']].describe())
 
-    print("\nStatistical information for image sizes:")
-    print(df[['width', 'height', 'channels']].describe())
-
-    print("\nStatistical information for class labels:")
-    print(df['label'].value_counts())
+    logger.info("\nStatistical information for class labels:")
+    logger.info(df['label'].value_counts())
 
     class_balance = df['label'].value_counts().tolist()
     is_balanced = all(balance == class_balance[0] for balance in class_balance[1:])
 
     if is_balanced:
-        print("\nThe dataset is balanced.")
+        logger.info("The dataset is balanced.")
     else:
-        print("\nThe dataset is not balanced.")
+        logger.info("The dataset is not balanced.")
 
     return df
 
@@ -94,20 +97,20 @@ if __name__ == "__main__":
 
     if args.filter_class:
         filtered_df = filter_by_class(df, class_label=args.filter_class)
-        print("\nDataFrame filtered by class:")
-        print(filtered_df)
+        logger.info("\nDataFrame filtered by class:")
+        logger.info(filtered_df)
 
     if args.filter_width and args.filter_height:
         filtered_size_df = filter_by_size_and_class(df, class_label=args.filter_class,
                                                      max_width=args.filter_width, max_height=args.filter_height)
-        print("\nDataFrame filtered by size and class:")
-        print(filtered_size_df)
+        logger.info("\nDataFrame filtered by size and class:")
+        logger.info(filtered_size_df)
 
     grouped_df = df.groupby('class')['pixel_count'].agg(['min', 'max', 'mean']).reset_index()
-    print("\nStatistical information for pixel count:")
-    print(grouped_df)
+    logger.info("\nStatistical information for pixel count:")
+    logger.info(grouped_df)
 
-    random_image = df[df['class'] == 'cat'].sample(1).iloc[0]
+    random_image = df.sample(1).iloc[0]
     image_path = random_image['absolute_path']
     print("\n")
     plot_histogram(image_path)
