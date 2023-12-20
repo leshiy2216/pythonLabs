@@ -9,11 +9,11 @@ import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 import os
-import zipfile
 from PIL import Image
 import glob
 from sklearn.model_selection import train_test_split
 from typing import List, Tuple, Any
+import random
 
 
 def load_data(cat_csv_path : str, dog_csv_path : str) -> Tuple[List[str], List[str]]:
@@ -309,14 +309,57 @@ def save_result(rose_probs : List[Tuple[int, float]], csv_path : str, model : nn
     torch.save(model.state_dict(), model_path)
 
 
+def load_model(model: nn.Module, model_path: str) -> nn.Module:
+    """
+    Load pre-trained weights into the model.
+
+    Parameters:
+    - model (nn.Module): The PyTorch model to which the weights will be loaded.
+    - model_path (str): Path to the file containing the pre-trained weights.
+
+    Returns:
+    - nn.Module: The model with loaded weights.
+    """
+    model.load_state_dict(torch.load(model_path))
+    return model
+
+
 if __name__ == "__main__":
     cat_images, dog_images = load_data('C:\\Users\\User\\Desktop\\testing\\dataset\\cat_annotation.csv', 'C:\\Users\\User\\Desktop\\testing\\dataset\\dog_annotation.csv')
     
     trenka, testik, valid = split_data(cat_images, dog_images)
     trenkaset, testikset, validset = transform_data(trenka, testik, valid)
 
-    # Запуск №4
-    print("Training with epochs=25, batch_size=256, learning_rate=0.005")
-    rose_probs, model = train_loop(25, 256, 0.005, trenkaset, testikset, validset)
+    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+    new_model = Cnn().to(device)
+    loaded_model = load_model(new_model, "E:\\education\\pythonLab\\pythonLabs\\Lab5\\model.pt")
+    loaded_model.eval()
 
-    save_result(rose_probs, 'E:\\education\\pythonLab\\pythonLabs\\Lab5\\result.csv', model, 'E:\\education\\pythonLab\\pythonLabs\\Lab5\\model.pt')
+    test_loader = torch.utils.data.DataLoader(dataset=testikset, batch_size=1, shuffle=True)
+
+    class_mapping = {0: "cat", 1: "dog"}
+
+    fig, axes = plt.subplots(1, 5, figsize=(20, 12), facecolor="w")
+    submission = pd.read_csv('E:\\education\\pythonLab\\pythonLabs\\Lab5\\result.csv')
+
+    for ax in axes.ravel():
+        i = random.choice(submission["id"].values)
+        label = submission.loc[submission["id"] == i, "label"].values[0]
+        if label > 0.5:
+            label = 1
+        else:
+            label = 0
+
+        img_path = testikset.data[i]
+        img = Image.open(img_path)
+        img_tensor = testikset.transform(img).unsqueeze(0).to(device)
+
+        with torch.no_grad():
+            output = loaded_model(img_tensor)
+
+        predicted_label = torch.argmax(output).item()
+
+        ax.set_title(f"True: {class_mapping[label]}, Predicted: {class_mapping[predicted_label]}")
+        ax.imshow(img)
+    
+    plt.show()
