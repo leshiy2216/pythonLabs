@@ -190,23 +190,24 @@ def show_results(epochs : int, acc : List[float], loss : List[float], v_acc : Li
     ax2.legend()
     plt.show()
 
-def train_loop(epochs: int, batch_size: int, lear: float, train_data: CustomDataset, test_data: CustomDataset, valid_data: CustomDataset) -> Tuple[list, Cnn]:
+def train_loop(epochs: int, batch_size: int, lear: float, train_data : CustomDataset, test_data : CustomDataset, valid_data : CustomDataset) -> Tuple[list, Cnn]:
     """
     create, train model
     Parameters
     ----------
-    epochs: Number of epochs.
-    batch_size: List of training accuracies.
-    loss: List of training losses.
-    v_acc: List of validation accuracies.
-    v_loss: List of validation losses.
+    epochs : int
+    batch_size : int
+    lear : float
+    train_data : CustomDataset
+    test_data : CustomDataset
+    valid_data : CustomDataset
     """
-    device = "cuda" if torch.cuda.is_available() else "cpu"
+    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     torch.manual_seed(1234)
-    if device == "cuda":
+    if device.type == "cuda":
         torch.cuda.manual_seed_all(1234)
     
-    model = Cnn()
+    model = Cnn().to(device)
     model.train()
 
     optimizer = optim.Adam(params=model.parameters(), lr=lear)
@@ -288,28 +289,34 @@ def train_loop(epochs: int, batch_size: int, lear: float, train_data: CustomData
     
     return rose_probs, model
 
+
+def save_result(rose_probs : List[Tuple[int, float]], csv_path : str, model : nn.Module, model_path : str) -> None:
+    """
+    func for saving the result in csv and the model.
+
+    Parameters
+    ----------
+    rose_probs : List[Tuple[int, float]]
+    csv_path : str
+    model : nn.Module
+    model_path : str
+    """
+    idx = list(i for i in range(len(rose_probs)))
+    prob = list(map(lambda x: x[1], rose_probs))
+    submission = pd.DataFrame({"id": idx, "label": prob})
+    submission.to_csv(csv_path, index=False)
+
+    torch.save(model.state_dict(), model_path)
+
+
 if __name__ == "__main__":
     cat_images, dog_images = load_data('C:\\Users\\User\\Desktop\\testing\\dataset\\cat_annotation.csv', 'C:\\Users\\User\\Desktop\\testing\\dataset\\dog_annotation.csv')
     
     trenka, testik, valid = split_data(cat_images, dog_images)
     trenkaset, testikset, validset = transform_data(trenka, testik, valid)
 
-    def show_random_images(dataset, num_images=5):
-        random_idx = np.random.randint(0, len(dataset), size=num_images)
+    # Запуск №4
+    print("Training with epochs=25, batch_size=256, learning_rate=0.005")
+    rose_probs, model = train_loop(25, 256, 0.005, trenkaset, testikset, validset)
 
-        fig = plt.figure()
-        for i, idx in enumerate(random_idx):
-            ax = fig.add_subplot(1, num_images, i + 1)
-            img, label = dataset[idx]
-            img = transforms.ToPILImage()(img)
-            plt.imshow(img)
-            plt.title(f"Label: {label}")
-            plt.axis('off')
-
-        plt.show()
-
-    show_random_images(trenkaset)
-
-    show_random_images(testikset)
-
-    show_random_images(validset)
+    save_result(rose_probs, 'E:\\education\\pythonLab\\pythonLabs\\Lab5\\result.csv', model, 'E:\\education\\pythonLab\\pythonLabs\\Lab5\\model.pt')
