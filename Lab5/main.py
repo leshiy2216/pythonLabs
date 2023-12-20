@@ -292,7 +292,24 @@ if __name__ == "__main__":
     cat_images, dog_images = load_data('C:\\Users\\User\\Desktop\\testing\\dataset\\cat_annotation.csv', 'C:\\Users\\User\\Desktop\\testing\\dataset\\dog_annotation.csv')
     
     trenka, testik, valid = split_data(cat_images, dog_images)
+    trenkaset, testikset, validset = transform_data(trenka, testik, valid)
 
-    print(len(trenka))
-    print(len(testik))
-    print(len(valid))
+    def show_random_images(dataset, num_images=5):
+        random_idx = np.random.randint(0, len(dataset), size=num_images)
+
+        fig = plt.figure()
+        for i, idx in enumerate(random_idx):
+            ax = fig.add_subplot(1, num_images, i + 1)
+            img, label = dataset[idx]
+            img = transforms.ToPILImage()(img)
+            plt.imshow(img)
+            plt.title(f"Label: {label}")
+            plt.axis('off')
+
+        plt.show()
+
+    show_random_images(trenkaset)
+
+    show_random_images(testikset)
+
+    show_random_images(validset)
