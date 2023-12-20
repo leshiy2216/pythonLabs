@@ -4,9 +4,9 @@ import logging
 from PyQt5 import QtWidgets
 from PyQt5.QtWidgets import QVBoxLayout, QHBoxLayout, QPushButton, QLabel, QLineEdit, QFileDialog
 from PyQt5.QtGui import QPixmap
-from Lab2.annotation import create_annotation_file
-from Lab2.dataset_random_copy import copy_dataset
-from Lab2.iterator import ClassIterator, ImageIterator
+from annotation import create_annotation_file
+from dataset_random_copy import copy_dataset
+from iterator import ClassIterator, ImageIterator
 
 
 logging.basicConfig(level=logging.INFO)
