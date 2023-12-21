@@ -329,10 +329,55 @@ if __name__ == "__main__":
     
     trenka, testik, valid = split_data(cat_images, dog_images)
     trenkaset, testikset, validset = transform_data(trenka, testik, valid)
+    """
+    # Запуск №X
+    print("Training with epochs=10, batch_size=128, learning_rate=0.009")
+    rose_probs, model = train_loop(15, 128, 0.003, trenkaset, testikset, validset)
+    save_result(rose_probs, 'E:\\education\\pythonLab\\pythonLabs\\Lab5\\result9.csv', model, 'E:\\education\\pythonLab\\pythonLabs\\Lab5\\model9.pt')"""
+    """
+    # Запуск №1
+    print("Training with epochs=10, batch_size=64, learning_rate=0.001")
+    rose_probs, model = train_loop(10, 64, 0.001, trenkaset, testikset, validset)
+    save_result(rose_probs, 'E:\\education\\pythonLab\\pythonLabs\\Lab5\\result1.csv', model, 'E:\\education\\pythonLab\\pythonLabs\\Lab5\\model1.pt')
 
+    # Запуск №2
+    print("Training with epochs=10, batch_size=128, learning_rate=0.001")
+    rose_probs, model = train_loop(10, 128, 0.001, trenkaset, testikset, validset)
+    save_result(rose_probs, 'E:\\education\\pythonLab\\pythonLabs\\Lab5\\result2.csv', model, 'E:\\education\\pythonLab\\pythonLabs\\Lab5\\model2.pt')
+
+    # Запуск №3
+    print("Training with epochs=10, batch_size=256, learning_rate=0.001")
+    rose_probs, model = train_loop(10, 256, 0.001, trenkaset, testikset, validset)
+    save_result(rose_probs, 'E:\\education\\pythonLab\\pythonLabs\\Lab5\\result3.csv', model, 'E:\\education\\pythonLab\\pythonLabs\\Lab5\\model3.pt')
+
+    # Запуск №4
+    print("Training with epochs=10, batch_size=512, learning_rate=0.001")
+    rose_probs, model = train_loop(10, 512, 0.001, trenkaset, testikset, validset)
+    save_result(rose_probs, 'E:\\education\\pythonLab\\pythonLabs\\Lab5\\result4.csv', model, 'E:\\education\\pythonLab\\pythonLabs\\Lab5\\model4.pt')
+
+    # Запуск №5
+    print("Training with epochs=10, batch_size=64, learning_rate=0.005")
+    rose_probs, model = train_loop(10, 64, 0.005, trenkaset, testikset, validset)
+    save_result(rose_probs, 'E:\\education\\pythonLab\\pythonLabs\\Lab5\\result5.csv', model, 'E:\\education\\pythonLab\\pythonLabs\\Lab5\\model5.pt')
+
+    # Запуск №6
+    print("Training with epochs=10, batch_size=64, learning_rate=0.009")
+    rose_probs, model = train_loop(10, 64, 0.009, trenkaset, testikset, validset)
+    save_result(rose_probs, 'E:\\education\\pythonLab\\pythonLabs\\Lab5\\result6.csv', model, 'E:\\education\\pythonLab\\pythonLabs\\Lab5\\model6.pt')
+
+    # Запуск №7
+    print("Training with epochs=10, batch_size=64, learning_rate=0.012")
+    rose_probs, model = train_loop(10, 64, 0.012, trenkaset, testikset, validset)
+    save_result(rose_probs, 'E:\\education\\pythonLab\\pythonLabs\\Lab5\\result7.csv', model, 'E:\\education\\pythonLab\\pythonLabs\\Lab5\\model7.pt')
+
+    # Запуск №8
+    print("Training with epochs=10, batch_size=64, learning_rate=0.016")
+    rose_probs, model = train_loop(10, 64, 0.016, trenkaset, testikset, validset)
+    save_result(rose_probs, 'E:\\education\\pythonLab\\pythonLabs\\Lab5\\result8.csv', model, 'E:\\education\\pythonLab\\pythonLabs\\Lab5\\model8.pt')
+    """
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     new_model = Cnn().to(device)
-    loaded_model = load_model(new_model, "E:\\education\\pythonLab\\pythonLabs\\Lab5\\model.pt")
+    loaded_model = load_model(new_model, "E:\\education\\pythonLab\\pythonLabs\\Lab5\\model9.pt")
     loaded_model.eval()
 
     test_loader = torch.utils.data.DataLoader(dataset=testikset, batch_size=1, shuffle=True)
@@ -340,7 +385,7 @@ if __name__ == "__main__":
     class_mapping = {0: "cat", 1: "dog"}
 
     fig, axes = plt.subplots(1, 5, figsize=(20, 12), facecolor="w")
-    submission = pd.read_csv('E:\\education\\pythonLab\\pythonLabs\\Lab5\\result.csv')
+    submission = pd.read_csv('E:\\education\\pythonLab\\pythonLabs\\Lab5\\result9.csv')
 
     for ax in axes.ravel():
         i = random.choice(submission["id"].values)
